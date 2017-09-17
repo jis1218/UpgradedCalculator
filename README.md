@@ -11,7 +11,8 @@ String strArray[] = result.split("(?<=[*/()+-])|(?=[*/+()-])");
 for(String put : strArray){
             list.add(put);
         }
-        ```
+```
+
 ##### 3. 곱하기와 나누기 먼저 계산하고 그 다음에 더하기 빼기를 계산한다.
 
 
