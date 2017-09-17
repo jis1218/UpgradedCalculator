@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static android.view.View.X;
+
 //implements를 통해 lister를 달아주는 방법도 있다.
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     TextView topDisplay, inputDisplay;
     int index;
     Button targetButton;
-    Button btn0, btn1;
+    Button btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9;
     FrameLayout frameLayout;
     LinearLayout linearLayout;
 
@@ -46,19 +48,28 @@ public class MainActivity extends AppCompatActivity {
 
         btn0 = (Button) findViewById(R.id.btn0);
         btn1 = (Button) findViewById(R.id.btn1);
+        btn2 = (Button) findViewById(R.id.btn2);
+        btn3 = (Button) findViewById(R.id.btn3);
+        btn4 = (Button) findViewById(R.id.btn4);
+        btn5 = (Button) findViewById(R.id.btn5);
+        btn6 = (Button) findViewById(R.id.btn6);
+        btn7 = (Button) findViewById(R.id.btn7);
+        btn8 = (Button) findViewById(R.id.btn8);
+        btn9 = (Button) findViewById(R.id.btn9);
+
 
         frameLayout = (FrameLayout) findViewById(R.id.frameLayout);
 
         btn0.setOnClickListener(onClickListener);
         btn1.setOnClickListener(onClickListener);
-        findViewById(R.id.btn2).setOnClickListener(onClickListener);
-        findViewById(R.id.btn3).setOnClickListener(onClickListener);
-        findViewById(R.id.btn4).setOnClickListener(onClickListener);
-        findViewById(R.id.btn5).setOnClickListener(onClickListener);
-        findViewById(R.id.btn6).setOnClickListener(onClickListener);
-        findViewById(R.id.btn7).setOnClickListener(onClickListener);
-        findViewById(R.id.btn8).setOnClickListener(onClickListener);
-        findViewById(R.id.btn9).setOnClickListener(onClickListener);
+        btn2.setOnClickListener(onClickListener);
+        btn3.setOnClickListener(onClickListener);
+        btn4.setOnClickListener(onClickListener);
+        btn5.setOnClickListener(onClickListener);
+        btn6.setOnClickListener(onClickListener);
+        btn7.setOnClickListener(onClickListener);
+        btn8.setOnClickListener(onClickListener);
+        btn9.setOnClickListener(onClickListener);
         findViewById(R.id.btnPlus).setOnClickListener(onClickListener);
         findViewById(R.id.btnMinus).setOnClickListener(onClickListener);
         findViewById(R.id.btnTime).setOnClickListener(onClickListener);
@@ -149,31 +160,31 @@ public class MainActivity extends AppCompatActivity {
                     fly(btn1, "1");
                     break;
                 case R.id.btn2:
-                    addText("2");
+                    fly(btn2, "2");
                     break;
                 case R.id.btn3:
-                    addText("3");
+                    fly(btn3, "3");
                     break;
                 case R.id.btn4:
-                    addText("4");
+                    fly(btn4, "4");
                     break;
                 case R.id.btn5:
-                    addText("5");
+                    fly(btn5, "5");
                     break;
                 case R.id.btn6:
-                    addText("6");
+                    fly(btn6, "6");
                     break;
                 case R.id.btn7:
-                    addText("7");
+                    fly(btn7, "7");
                     break;
                 case R.id.btn8:
-                    addText("8");
+                    fly(btn8, "8");
                     break;
                 case R.id.btn9:
-                    addText("9");
+                    fly(btn9, "9");
                     break;
                 case R.id.btn0:
-                    addText("0");
+                    fly(btn0, "0");
                     break;
             }
             switch(view.getId()){
@@ -221,25 +232,32 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void fly(Button button, String s){
-        Button newButton = button;
-        Button dummy = new Button(this);
 
-        dummy.setText(newButton.getText().toString());
-        dummy.setBackground(newButton.getBackground());
-        dummy.setHeight(newButton.getHeight());
-        dummy.setWidth(newButton.getWidth());
+        if(button instanceof Button){ // button 변수가 Button 클래스의 인스턴스인지를 체크
+
+        }
+
+        //dummy를 날리는 이유, 만약 실제 버튼을 날리면 실제 버튼이 담겨있는 레이아웃 때문에 버튼이 레이아웃을 벗어나지 못한다. 따라서 dummy를 최상위 레이아웃에 넣어서 하면 보이게 된다.
+
+        Button dummy = new Button(this);
+        dummy.setLayoutParams(new ActionBar.LayoutParams(button.getWidth(), button.getHeight()));
+        dummy.setText(button.getText().toString());
+        dummy.setBackground(button.getBackground());
+
+        LinearLayout parent = (LinearLayout) button.getParent();
+
 
         int locarr[] = new int[2];
         button.getLocationInWindow(locarr);
-        dummy.setX(locarr[0]);
-        dummy.setY(locarr[1]);
-
-        Toast.makeText(this, button.getX() + " " +dummy.getX() + " " + dummy.getY(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, button.getX() + " " + parent.getX() + " " + button.getY() + " " + parent.getY(), Toast.LENGTH_SHORT).show();
+        dummy.setX(button.getX()+parent.getX()); //button의 위치는 button의 parent layout에 대한 상대적인 값이고, layout의 위치는 FrameLayout에서의 상대적인 위치이기 때문에 이 두개를 더해줘야 한다.
+        dummy.setY(button.getY()+parent.getY());
         frameLayout.addView(dummy);
-        animstarter(dummy, s);
+        animstarter(dummy, s, frameLayout);
+        //dummy.destroyDrawingCache();
     }
 
-    public void animstarter(Button button, String s){
+    public void animstarter(final Button button, String s, final FrameLayout layout){
         final String ss = s;
         int targetLocation[] = new int[2];
         int buttonLocation[] = new int[2];
@@ -247,10 +265,11 @@ public class MainActivity extends AppCompatActivity {
         int distance[] = new int[2];
         button.getLocationInWindow(buttonLocation);
 
+        //넘겨받는 button이 최상위 레이아웃인 FrameLayout에 있기 때문에 아래 distance 구하는 식은 사용하면 안된다. 부정확할 수 있다.
         distance[0] = targetLocation[0]-buttonLocation[0];
         distance[1] = targetLocation[1]-buttonLocation[1];
-        ObjectAnimator animX = ObjectAnimator.ofFloat(button, "translationX", distance[0]);
-        ObjectAnimator animY = ObjectAnimator.ofFloat(button, "translationY", distance[1]);
+        ObjectAnimator animX = ObjectAnimator.ofFloat(button, "translationX", targetButton.getX());
+        ObjectAnimator animY = ObjectAnimator.ofFloat(button, "translationY", targetButton.getY());
 //        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP ) {
 //            button.setTranslationZ(0);
 //            Toast.makeText(getApplicationContext(), "확인", Toast.LENGTH_SHORT).show();
@@ -268,6 +287,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationEnd(Animator animator) {
                 addText(ss);
+                layout.removeView(button);
+
             }
 
             @Override
@@ -276,13 +297,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAnimationRepeat(Animator animator) {}
         });
-
-        animX = ObjectAnimator.ofFloat(button, "translationX", 0);
-        animY = ObjectAnimator.ofFloat(button, "translationY", 0);
-        AnimatorSet set2 = new AnimatorSet();
-        set2.playTogether(animX, animY);
-        set2.setStartDelay(1000);
-        set2.start();
 
     }
 }

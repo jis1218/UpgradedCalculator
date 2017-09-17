@@ -1,5 +1,5 @@
-# 사칙연산 규칙대로 계산해주는 계산기
-##### 부호 있는 계산과 버튼이 날라가는 로직 설명은 추후 추가되어야 함
+# 사칙연산 규칙대로 계산해주는 계산기 + 버튼을 눌렀을 때 버튼이 날아가는 애니메이션
+##### 괄호 있는 계산과 버튼이 날라가는 로직 설명은 추후 추가되어야 함
 
 ### 기본 로직은 다음과 같다.
 
@@ -37,4 +37,64 @@ while(i<list.size()-1){
                 i=0;
             }
           }
+```
+
+##### 3. dummy를 이용한 애니메이션 구현
+##### > 숫자 버튼을 누를 때 마다 버튼이 숫자를 띄워주는 화면으로 날아가는 애니메이션을 구현함, 처음에는 실제 버튼을 ObjectAnimator를 통해 구현하고자 하였으나 버튼이 속해있는 LinearLayout을 벗어나지 못하는 현상이 발생함, 버튼의 애니메이션은 그 버튼의 parent view 안에서만 가능한 것 같음, 따라서 dummy를 이용하였는데 코드는 다음과 같다.
+
+```java
+public void fly(Button button, String s){
+    if(button instanceof Button){ // button 변수가 Button 클래스의 인스턴스인지를 체크
+    }
+    //dummy를 날리는 이유, 만약 실제 버튼을 날리면 실제 버튼이 담겨있는 레이아웃 때문에 버튼이 레이아웃을 벗어나지 못한다. 따라서 dummy를 최상위 레이아웃에 넣어서 하면 보이게 된다.
+    Button dummy = new Button(this);
+    dummy.setLayoutParams(new ActionBar.LayoutParams(button.getWidth(), button.getHeight()));
+    dummy.setText(button.getText().toString());
+    dummy.setBackground(button.getBackground());
+
+    LinearLayout parent = (LinearLayout) button.getParent();
+
+    int locarr[] = new int[2];
+    button.getLocationInWindow(locarr);
+    Toast.makeText(this, button.getX() + " " + parent.getX() + " " + button.getY() + " " + parent.getY(), Toast.LENGTH_SHORT).show();
+    dummy.setX(button.getX()+parent.getX()); //button의 위치는 button의 parent layout에 대한 상대적인 값이고, layout의 위치는 FrameLayout에서의 상대적인 위치이기 때문에 이 두개를 더해줘야 한다.
+    dummy.setY(button.getY()+parent.getY());
+    frameLayout.addView(dummy);
+    animstarter(dummy, s, frameLayout);
+    //dummy.destroyDrawingCache();
+}
+
+public void animstarter(final Button button, String s, final FrameLayout layout){
+  ...
+   set.addListener(new Animator.AnimatorListener() {
+     ...
+     @Override
+            public void onAnimationEnd(Animator animator) {
+                addText(ss);
+                layout.removeView(button);
+
+            }
+            ...
+          }
+    }
+```
+
+##### 최상위 layout인 FrameLayout에 dummy 버튼 객체를 생성해준다. 이 dummy 버튼 객체를 눌리는 숫자 버튼의 속성과 똑같게 만들어 준뒤 좌표를 정하여 날리면 된다. 그리고 사용 후에는 AnimationListner를 통해 최상위 FrameLayout에 있는 dummy view를 제거해주면 된다.
+
+##### 4. ObjectAnimator를 쓸 때의 주의점
+##### > ObjectAnimator 쓸 때 ObjectAnimator.ofFloat 함수의 파라미터 중 float 값을 넣는 곳이 있다. 어느 위치로 보낼 것인지를 넣는 곳인데 내가 날리고자 하는 뷰가 어느 위치에 있느냐에 따라 달라진다. 뷰그룹에 맨 왼쪽 상단이 (0,0)이기 때문에 그것을 잘 고려해서 넣어야 한다.
+```java
+public void animstarter(final Button button, String s, final FrameLayout layout){
+       final String ss = s;
+       int targetLocation[] = new int[2];
+       int buttonLocation[] = new int[2];
+       targetButton.getLocationInWindow(targetLocation);
+       int distance[] = new int[2];
+       button.getLocationInWindow(buttonLocation);
+
+       //넘겨받는 button이 최상위 레이아웃인 FrameLayout에 있기 때문에 아래 distance 구하는 식은 사용하면 안된다. 부정확할 수 있다.
+       distance[0] = targetLocation[0]-buttonLocation[0];
+       distance[1] = targetLocation[1]-buttonLocation[1];
+       ObjectAnimator animX = ObjectAnimator.ofFloat(button, "translationX", targetButton.getX());
+       ObjectAnimator animY = ObjectAnimator.ofFloat(button, "translationY", targetButton.getY());
 ```
