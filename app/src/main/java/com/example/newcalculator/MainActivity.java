@@ -196,45 +196,42 @@ public class MainActivity extends AppCompatActivity {
 
             switch(view.getId()) {
                 case R.id.btn1:
-                    //addText("1");
-                    //fly(btn1, "1");
-                    addText("1");
+
+                    fly(btn1, "1");
+
                     break;
                 case R.id.btn2:
-                    //fly(btn2, "2");
-                    addText("2");
+                    fly(btn2, "2");
+
                     break;
                 case R.id.btn3:
-                    //fly(btn3, "3");
-                    addText("3");
+                    fly(btn3, "3");
+
                     break;
                 case R.id.btn4:
-                   //fly(btn4, "4");
-                    addText("4");
+                   fly(btn4, "4");
+
                     break;
                 case R.id.btn5:
-                    //fly(btn5, "5");
-                    addText("5");
+                    fly(btn5, "5");
+
                     break;
                 case R.id.btn6:
-                    //fly(btn6, "6");
-                    addText("6");
+                    fly(btn6, "6");
+
                     break;
                 case R.id.btn7:
-                    //fly(btn7, "7");
-                    addText("7");
+                    fly(btn7, "7");
+
                     break;
                 case R.id.btn8:
-                    //fly(btn8, "8");
-                    addText("8");
+                    fly(btn8, "8");
                     break;
                 case R.id.btn9:
-                    //fly(btn9, "9");
-                    addText("9");
+                    fly(btn9, "9");
                     break;
                 case R.id.btn0:
-                    //fly(btn0, "0");
-                    addText("0");
+                    fly(btn0, "0");
                     break;
             }
             switch(view.getId()){
