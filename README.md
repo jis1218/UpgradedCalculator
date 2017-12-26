@@ -4,7 +4,28 @@
 ### 기본 로직은 다음과 같다.
 
 ##### 1. 숫자와 부호를 화면에 띄운다.
-##### 2. '='를 누르면 화면의 String 값을 잘게 쪼개어 ArrayList에 넣는다. 쪼개는 방법은 다음과 같이 정규식을 써서 한다.
+##### 2. '='를 누르면 괄호 안에 있는 식을 먼저 계산해준다.
+```java
+public String calculating(String s){
+    boolean flag = true;
+    StringBuffer buffer = new StringBuffer(s);
+    while(flag) { //괄호가 없을 때까지 계산
+
+        int lastIndex = buffer.lastIndexOf("(");
+        int firstOccur = buffer.indexOf(")", lastIndex);
+
+        if(lastIndex==-1){
+            flag = false;
+
+        }else{
+            buffer.replace(lastIndex, firstOccur+1, getResult(s.substring(lastIndex+1, firstOccur)));
+        }
+    }
+
+    return getResult(buffer.toString());
+}
+```
+##### 3. 계산하는 방법은 넘어온 String 값을 잘게 쪼개어 ArrayList에 넣는다. 쪼개는 방법은 다음과 같이 정규식을 써서 한다.
 
 ```java
 String strArray[] = result.split("(?<=[*/()+-])|(?=[*/+()-])");
@@ -13,8 +34,52 @@ for(String put : strArray){
         }
 ```
 
-##### 3. 곱하기와 나누기 먼저 계산하고 그 다음에 더하기 빼기를 계산한다.
+##### 4. 곱하기와 나누기 먼저 계산하고 그 다음에 더하기 빼기를 계산한다.
+```java
+public String getResult(String result){
+    ArrayList<String> list = new ArrayList<>();
+    int i =1;
+    String strArray[] = result.split("(?<=[*/()+-])|(?=[*/+()-])");
+    for(String put : strArray){
+        list.add(put);
+    }
 
+    while(i<list.size()-1){
+        if(list.get(i).equals("*")){
+            list.set(i-1, String.valueOf(Double.parseDouble(list.get(i-1)) * Double.parseDouble(list.get(i+1))));
+            list.remove(i);
+            list.remove(i);
+            i=0;
+        }
+
+        if(list.get(i).equals("/")){
+            list.set(i-1, String.valueOf(Double.parseDouble(list.get(i-1)) / Double.parseDouble(list.get(i+1))));
+            list.remove(i);
+            list.remove(i);
+            i=0;
+        }
+
+        i++;
+    }
+    i=0;
+    while(i<list.size()-1){
+        if(list.get(i).equals("+")){
+            list.set(i-1, String.valueOf(Double.parseDouble(list.get(i-1)) + Double.parseDouble(list.get(i+1))));
+            list.remove(i);
+            list.remove(i);
+            i=0;
+        }
+        if(list.get(i).equals("-")){
+            list.set(i-1, String.valueOf(Double.parseDouble(list.get(i-1)) - Double.parseDouble(list.get(i+1))));
+            list.remove(i);
+            list.remove(i);
+            i=0;
+        }
+        i++;
+    }
+    return list.get(0).toString();
+}
+```
 
 <br>
 

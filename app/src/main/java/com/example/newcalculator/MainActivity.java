@@ -40,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculator);
 
+        initView();
+
+
+    }
+
+    public void initView(){
         linearLayout = (LinearLayout) findViewById(R.id.stage2);
         targetButton = (Button) findViewById(R.id.targetButton);
 
@@ -89,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         for(String put : strArray){
             list.add(put);
         }
+
         while(i<list.size()-1){
             if(list.get(i).equals("*")){
                 list.set(i-1, String.valueOf(Double.parseDouble(list.get(i-1)) * Double.parseDouble(list.get(i+1))));
@@ -125,6 +132,25 @@ public class MainActivity extends AppCompatActivity {
         return list.get(0).toString();
     }
 
+    public String calculating(String s){
+        boolean flag = true;
+        StringBuffer buffer = new StringBuffer(s);
+        while(flag) {
+
+            int lastIndex = buffer.lastIndexOf("(");
+            int firstOccur = buffer.indexOf(")", lastIndex);
+
+            if(lastIndex==-1){
+                flag = false;
+
+            }else{
+                buffer.replace(lastIndex, firstOccur+1, getResult(s.substring(lastIndex+1, firstOccur)));
+            }
+        }
+
+        return getResult(buffer.toString());
+    }
+
     public void addText(String text){
         if(inputDisplay.getText().toString().equals("")){
             inputDisplay.setText(text);
@@ -150,6 +176,20 @@ public class MainActivity extends AppCompatActivity {
         inputDisplay.setText("");
     }
 
+    public void foreBracePut(){
+        if(index!=0 || topDisplay.getText().toString().equals("")){
+            topDisplay.append("(");
+        }else{
+            topDisplay.append("*" + "(");
+            inputDisplay.setText("");
+        }
+    }
+
+    public void backBarcePut(){
+        topDisplay.append(")");
+
+    }
+
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -157,34 +197,44 @@ public class MainActivity extends AppCompatActivity {
             switch(view.getId()) {
                 case R.id.btn1:
                     //addText("1");
-                    fly(btn1, "1");
+                    //fly(btn1, "1");
+                    addText("1");
                     break;
                 case R.id.btn2:
-                    fly(btn2, "2");
+                    //fly(btn2, "2");
+                    addText("2");
                     break;
                 case R.id.btn3:
-                    fly(btn3, "3");
+                    //fly(btn3, "3");
+                    addText("3");
                     break;
                 case R.id.btn4:
-                    fly(btn4, "4");
+                   //fly(btn4, "4");
+                    addText("4");
                     break;
                 case R.id.btn5:
-                    fly(btn5, "5");
+                    //fly(btn5, "5");
+                    addText("5");
                     break;
                 case R.id.btn6:
-                    fly(btn6, "6");
+                    //fly(btn6, "6");
+                    addText("6");
                     break;
                 case R.id.btn7:
-                    fly(btn7, "7");
+                    //fly(btn7, "7");
+                    addText("7");
                     break;
                 case R.id.btn8:
-                    fly(btn8, "8");
+                    //fly(btn8, "8");
+                    addText("8");
                     break;
                 case R.id.btn9:
-                    fly(btn9, "9");
+                    //fly(btn9, "9");
+                    addText("9");
                     break;
                 case R.id.btn0:
-                    fly(btn0, "0");
+                    //fly(btn0, "0");
+                    addText("0");
                     break;
             }
             switch(view.getId()){
@@ -210,13 +260,15 @@ public class MainActivity extends AppCompatActivity {
                     index = 4;
                     break;
                 case R.id.btnEqual:
-                    inputDisplay.setText(getResult(topDisplay.getText().toString()));
+                    inputDisplay.setText(calculating(topDisplay.getText().toString()));
                     break;
 
                 case R.id.btnBr1:
+                    foreBracePut();
                     break;
 
                 case R.id.btnBr2:
+                    backBarcePut();
                     break;
 
                 case R.id.btnDlt:
